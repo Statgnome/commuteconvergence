@@ -1,0 +1,136 @@
+---
+title: "Commute Convergence Vignette"
+author: "David Burton"
+date: "October 11, 2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Basic Commute Analysis
+
+So, you've been driving to the same place more and more often, but it's eating you
+alive inside that you don't know when it will take you the least time to get there.
+
+This R package is for you. _commuteconvergence_ is a simple package that has a very simple
+requirement: you must record the day of the week and total commute time each day, or when you
+leave home and arrive at work, in the columns of a Google Sheet.
+
+_commuteconvergence_ will harness the power of the great _googlesheets_ and _ggplot2_ 
+packages to work for you!
+
+##Step 0: Collect data    
+
+It is *extremely* important that you record your data into a Google Sheet as instructed.
+At the bare minimum it must include two columns: Day and Total(drive time each day). 
+Day is a group by which you want to compare your times, so you can use other groups than day of
+the week, such as what you listen to in the  car. However, you also have the 
+option to have the package calculate drive time for you if you will supply a Leave time 
+and Arrive time instead of Total. Leave and Arrive must be formatted in HH:MM:SS; such as 
+10:23:00 AM, for 10:23 AM. Googlesheets seems to do this automatically, but be careful to double
+check if you report afternoon and morning times. Using actual times also provides you more in depth, 
+and probably, more useful analysis.
+
+##Step 1: Read in data   
+
+Get _commuteconvergence_ going using *library()*.
+After you publish your Google sheet to the web for viewing, via the file menu in Google Sheets,
+use the share button to get a url. Paste it in the function *read_sheet()*.
+If unsure of how to share via a link in Google Sheets please consult a Google help
+resource, or view documentation related to the _googleheets_ package.
+You have to place your own quotation marks around the sharing link.
+Assign the value of *read_sheet* to the data frame name you have chosen.    
+
+I have included a link to an example minimal sheet which is available for public viewing
+on Google Sheets. Please replace it with your own data once you understand the process.   
+```{r message=FALSE}
+library(commuteconvergence)
+commute <- read_sheet(
+"https://docs.google.com/spreadsheets/d/14TN5tRLf2HQq3m8Fot8VhEydobYqDW_7hBWqLWPcQzw/edit?usp=sharing")
+
+```
+
+##Step 2: View the data   
+Using the *commuteplots* function with your newly minted dataframe,
+one line of code will net you two relatively, well formatted graphs of your untransformed 
+commute data.   
+
+The defaults assume that you want to look at your data comparing total drive time
+by day of the week. Thus, the _Time_ variable = "Total", and the _Group_ variable ="Day".
+```{r}
+commuteplots(commute)
+```     
+   
+If you don't want to use days of the week, just subsitute in for _Group_. 
+For instance, here I have run the plots based on 
+comparing my total drive times by what I was listening to that morning. 
+I also used actual times instead of a total drive time. This will net you 
+another plot of total drive time explained by what time you left.
+
+```{r message=FALSE}
+davscommute <- read_sheet(
+"https://docs.google.com/spreadsheets/d/12-8vjn46tIZ2Xr98_o_AcUzX5qeMAV878h63wFPo4d4/edit?usp=sharing")
+
+commuteplots(davscommute,Leave = "Left",Arrive="ArriveDesk",Group="Listening")
+
+```   
+
+    
+##Step 3: Find out if times are significantly different.   
+Using the *commuteanova* function on your data frame will let you know if there
+are any significant differences based on the day you are driving.
+
+```{r}
+commuteanova(commute)
+```
+   
+###What about for days that are significantly different?   
+For that we'll need a Tukey Post-Hoc test and some different input to demonstrate.   
+
+Again, here is a practice link of data to use. It is artificically crafted to be
+significant for demonstration purposes.   
+```{r message=FALSE}
+different <- read_sheet(
+"https://docs.google.com/spreadsheets/d/1d_KjDBLt-iSiRcGDvWsGQMNUlrPselEwjCN60gwvfkM/edit?usp=sharing")
+
+commuteplots(different)
+commuteanova(different)
+```    
+
+Here is an example using real data with actual times.
+This gives you a k-means clustering of the times you leave
+as well as an ANOVA to tell you if those clusters are
+significantly different from one another. _timebins_ controls
+how many clusters are used.
+
+```{r messsage=FALSE}
+commuteanova(davscommute,Leave="Left",Arrive="ArriveDesk",usertimebins=6)
+```   
+Please note that because this checks for normality by using the Kolmogorov-Smirnov test,
+if your data has ties in it, or drive times that are the same within clusters, you
+will receive a warning. For those who are interested, the Kolmogorov-Smirnov test
+assumes that data points are coming from a continuous distribution, and it does not,
+reasonably enough, expect ties. Other options included using a Shapiro-Wilk test, but
+that would necessitate that clusters will always be at least n of 3.    
+
+Although not demonstrated in this version of the vignette, the package will also log
+transform your data in an attempt to bypass normality concerns. Future versions will
+attempt to handle these data issues more elegantly.
+
+##Step 4: Watch for future updates.   
+
+That's right, this package will only get better and better. Hit that update button
+occasionally to see if we've improved. Future patches may include better use of non-parametric
+tests and smoothing handling of normality testing.. Then you'll be extra certain you know which 
+times or days you should drive instead of working at home. Naturally, though, you'll have some 
+type of mandatory meeting that puts you on the road for your least optimal drive time, but this 
+package can't do much about that! ;)
+    
+
+```{r}
+sessionInfo()
+```
