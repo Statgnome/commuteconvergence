@@ -9,5 +9,5 @@ there were any extenuating circumstances, such as a car
 accident.
 
 This is my first foray into writing an R package, and though 
-it is GPL-3 licensd, it is mainly just for fun and skills
+it is GPL-3 licensed, it is mainly just for fun and skills
 development.
