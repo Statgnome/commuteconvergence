@@ -1,7 +1,11 @@
 Package: commuteconvergence
 Type: Package
 Title: Compare Commute Times using Google Sheets
+<<<<<<< HEAD
 Version: 0.0.0.9001
+=======
+Version: 0.0.0.9000
+>>>>>>> af6319c6bd08380aa62468ff2644a03011ae0b58
 Author: David Burton
 Maintainer: David Burton <david_burton@urmc.rochester.edu>
 Description: This package takes formatted time records, and performs
