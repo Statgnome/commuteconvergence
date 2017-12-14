@@ -28,7 +28,7 @@ commuteplots <- function(commutedf, Leave ="Left", Arrive ="ArriveDesk",
     #kmeans cluster by length of drive to compare to time left
     Expanse <- difftime(Depart,min(Depart),units="mins") %>% as.numeric()
     clusterdf <- Time %>% data.frame(Expanse)
-    timecluster <- clusterdf %>% kmeans(timebins)
+    timecluster <- clusterdf[,2] %>% kmeans(timebins)
     commutedf <- commutedf %>% dplyr::mutate(Cluster = timecluster[[1]],Expanse = Expanse)
 
           }
@@ -64,9 +64,19 @@ commuteplots <- function(commutedf, Leave ="Left", Arrive ="ArriveDesk",
 
   if(missing(Leave) == FALSE){
 
+    groupLabels <- vector(length = timebins)
+
+
+    for(i in 1:timebins){
+    maxdepart <- commutedf %>%
+      dplyr::filter(Cluster == i) %>%
+      dplyr::filter(Expanse == max(Expanse))
+    groupLabels[i] <- as.character(maxdepart[,3])}
+
+
   scatter <- ggplot2::ggplot(commutedf,
                              ggplot2::aes(commutedf[,3],commutedf[,1], color=Cluster)) +
-    ggplot2::scale_color_gradient(low="blue", high="red") +
+    ggplot2::scale_color_gradient(low="blue", high="yellow",labels=c(groupLabels),  name="Depart From") +
     ggplot2::geom_point(size=5) +
     ggplot2::theme_minimal() +
     ggplot2::labs(x = "Time Left for Work",y = "Commute Time, Minutes") +
@@ -79,18 +89,20 @@ commuteplots <- function(commutedf, Leave ="Left", Arrive ="ArriveDesk",
   box <-  ggplot2::ggplot(commutedf,
                           ggplot2::aes(as.factor(commutedf[,4]), commutedf[,1],
                                        colour = as.factor(commutedf[,4]))) +
-    ggplot2::geom_boxplot() +
+    ggplot2::geom_boxplot() + ggplot2::theme(legend.position="none") +
     ggplot2::labs(title=paste("Commute Time by ",colnames(commutedf)[4],", Minutes",sep=""),
-                  x= "Cluster", y="Home to Office Desk", colour = as.factor(colnames(commutedf)[4]))
+                  x= "Last Departure Time in Cluster", y="Home to Office Desk, Minutes",
+                   colour = as.factor(colnames(commutedf)[4])) +
+          ggplot2::scale_x_discrete(labels=c(groupLabels))
   plot(box)}
 
     #Makes a basic ggplot2 boxplot by day of the week, or another group, to prepare to consider ANOVA.
  box <-  ggplot2::ggplot(commutedf,
          ggplot2::aes(commutedf[,2], commutedf[,1],
                       colour = commutedf[,2])) +
-         ggplot2::geom_boxplot() +
+         ggplot2::geom_boxplot() + ggplot2::theme(legend.position="none") +
          ggplot2::labs(title=paste("Commute Time by ",colnames(commutedf)[2],", Minutes",sep=""),
-                       x= Group, y="Home to Office Desk", colour = Group)
+                       x= Group, y="Home to Office Desk, Minutes", colour = Group)
 plot(box)
 
 }

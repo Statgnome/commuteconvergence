@@ -49,8 +49,8 @@ commuteanova <- function(commutedf,Leave ="Left",Arrive="ArriveDesk",Time ="Tota
     #ks test on multiple groups with list output
     for(i in 1:length(names(clustercounts))){
     datcluster <- dplyr::filter(commutedf,Cluster==i)
-    ksres[[i]]<- datcluster[,1] %>%
-      ks.test(y="pnorm",mean(datcluster[,1],sd(datcluster[,1])))
+    ksres[[i]]<-
+      suppressWarnings( ks.test(x =  datcluster[,1],y="pnorm",mean(datcluster[,1],sd(datcluster[,1]))))
     #end ks loop
     }
 
@@ -63,22 +63,25 @@ commuteanova <- function(commutedf,Leave ="Left",Arrive="ArriveDesk",Time ="Tota
     #ks log loop
       for(i in 1:length(names(clustercounts))){
         datcluster <- dplyr::filter(commutedf,Cluster==i)
-        kslog[[i]]<- datcluster[,6] %>%
-          ks.test(y="pnorm",mean(datcluster[,6],sd(datcluster[,6])))
+        kslog[[i]]<-
+          suppressWarnings(ks.test(x=datcluster[,6],y="pnorm",mean(datcluster[,6],sd(datcluster[,6]))))
         #end ks log loop
       }
 
       #checking the ks on the logs for normality
       if(any(lapply(kslog,'[[',2) %>% as.vector() < .05)){
-        paste("Leave between ",mindepart," and ",maxdepart," for the shortest average drive time based on descriptive statistics.",sep="") %>%
-          print()
-        print("Your commutes are not normally distirbuted under log transformation.")
+        paste("Leave between ",mindepart," and ",maxdepart,
+            " for the shortest average drive time based on descriptive statistics.",sep="") %>% print()
+          stop("No formal statistical test was conducted as ANOVA assumptions were not met by the data.")
+
+
             }else{
               #testing for heteroscedasticity now
           if(fligner.test(logTime ~ Cluster, data=commutedf)$p.value < .05){
-            paste("Leave between ",mindepart," and ",maxdepart," for the shortest average drive time based on descriptive statistics.",sep="") %>%
+            paste("Leave between ",mindepart," and ",maxdepart," for the shortest average
+                  drive time based on descriptive statistics.",sep="") %>%
               print()
-            print("Your commutes are heteroscedastic under log transformation.")
+            stop("No formal statistical test was conducted as ANOVA assumptions were not met by the data.")
             #if data is homoscedastic the rest of the analysis follows on the logs
           }else{
             #Runs linear model to perform Anova by cluster.
@@ -89,10 +92,12 @@ commuteanova <- function(commutedf,Leave ="Left",Arrive="ArriveDesk",Time ="Tota
             #The series of if statements begins by
             #checking for non-significant ANOVA results.
             if(anovaresults[1,5] > .05){
-              paste("Your commutes are not significantly different between one another using ",timebins," clusters.",sep="") %>%
+              paste("Your commutes are not significantly different between one another using ",timebins,"
+                    clusters.",sep="") %>%
                 print()
               #It sill tells minimum average drive time day.
-              paste("Leave between ",mindepart," and ",maxdepart," though for the shortest average drive time.",sep="") %>%
+              paste("Leave between ",mindepart," and ",maxdepart," though for the shortest average
+                    drive time.",sep="") %>%
                 print()
             }else{
               #Runs linear model to perform Anova by cluster.

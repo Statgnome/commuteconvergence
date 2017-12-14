@@ -1,7 +1,7 @@
 ---
 title: "Commute Convergence Vignette"
 author: "David Burton"
-date: "October 11, 2017"
+date: "December 14, 2017"
 output:
   pdf_document: default
   html_document: default
@@ -9,6 +9,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
 
 # Basic Commute Analysis
@@ -73,7 +74,7 @@ another plot of total drive time explained by what time you left.
 
 ```{r message=FALSE}
 davscommute <- read_sheet(
-"https://docs.google.com/spreadsheets/d/12-8vjn46tIZ2Xr98_o_AcUzX5qeMAV878h63wFPo4d4/edit?usp=sharing")
+  "https://docs.google.com/spreadsheets/d/12-8vjn46tIZ2Xr98_o_AcUzX5qeMAV878h63wFPo4d4/edit?usp=sharing")
 
 commuteplots(davscommute,Leave = "Left",Arrive="ArriveDesk",Group="Listening")
 
@@ -82,7 +83,8 @@ commuteplots(davscommute,Leave = "Left",Arrive="ArriveDesk",Group="Listening")
     
 ##Step 3: Find out if times are significantly different.   
 Using the *commuteanova* function on your data frame will let you know if there
-are any significant differences based on the day you are driving.
+are any significant differences based on the day you are driving. If no actual times are used,
+ assumptions of ANOVA are ignored, and an ANOVA is run based on day of the week. 
 
 ```{r}
 commuteanova(commute)
@@ -104,32 +106,55 @@ commuteanova(different)
 Here is an example using real data with actual times.
 This gives you a k-means clustering of the times you leave
 as well as an ANOVA to tell you if those clusters are
-significantly different from one another. _timebins_ controls
+significantly different from one another. _usertimebins_ controls
 how many clusters are used.
 
-```{r messsage=FALSE}
-commuteanova(davscommute,Leave="Left",Arrive="ArriveDesk",usertimebins=6)
-```   
-Please note that because this checks for normality by using the Kolmogorov-Smirnov test,
-if your data has ties in it, or drive times that are the same within clusters, you
-will receive a warning. For those who are interested, the Kolmogorov-Smirnov test
-assumes that data points are coming from a continuous distribution, and it does not,
-reasonably enough, expect ties. Other options included using a Shapiro-Wilk test, but
-that would necessitate that clusters will always be at least n of 3.    
+For the sake of the vignette, it can not be run in a chunk, since the resulting error
+will stop the markdown from knitting.
 
-Although not demonstrated in this version of the vignette, the package will also log
-transform your data in an attempt to bypass normality concerns. Future versions will
-attempt to handle these data issues more elegantly.
+###commuteanova(davscommute,Leave="Left",Arrive="ArriveDesk",usertimebins=6)
+   
+
+[1] "Leave between 09:48:00 and 11:02:00 for the shortest average drive time based on descriptive st... <truncated>
+ Show Traceback
+Error in commuteanova(davscommute, Leave = "Left", Arrive = "ArriveDesk", : No formal statistical test was conducted as ANOVA assumptions were not met by the data.
+
+
+
+Built in error messages, such as the one above, are in place to prevent an ANOVA being 
+conducted when assumptions of an ANOVA
+test are not met. These include normally distributed data and homogeneity of variance.
+
+Therein lies the problem though. Commute data seems likely to include ties, and in this
+case non-parameteric rank tests are unvailable due to ties. It seems then that descriptive statistics
+may be the only way to truly analyze the data. In this case, the lowest mean and variance seem
+to be desirable, with mean probably having greater significance.
 
 ##Step 4: Watch for future updates.   
 
-That's right, this package will only get better and better. Hit that update button
-occasionally to see if we've improved. Future patches may include better use of non-parametric
-tests and smoothing handling of normality testing.. Then you'll be extra certain you know which 
+Future patches may include different types of statistical tests built to handle the data type better. 
+Then you'll be extra certain you know which 
 times or days you should drive instead of working at home. Naturally, though, you'll have some 
 type of mandatory meeting that puts you on the road for your least optimal drive time, but this 
 package can't do much about that! ;)
     
+
+##Recap
+
+Leaving between 8:46 and 9:31 seemed to give me the best result. The mean was pretty low, and the variance
+of the time group was small with one outlier at 35 minutes. Other groups did seem to perform better, but
+there also needs to be some consideration given to when I needed to be at Saunders. Unless I wanted to leave
+very early in the morning, or arrive very late, this seemed to be the best compromise. Unfortunately, 
+Probability Theory was at 9:15, and this guaranteed that at least two days a week I was on the road 
+during the worst times, 7:18 to 8:02. Although, these interpretations are highly subjective since
+interpreting the boxplots is the only valid course of action at this point.
+
+If I had it to do over again, I may have tried to synthesize some kind of test statistic based around
+variance and mean. It's pretty obvious now that this data didn't lend itself to my chosen method of
+analysis. If I were going to continue working on this, I would probably move in that direction. I may
+have tried to come up with another type of data to examine. My goals were so ambitious that there are
+a lot of logic checks built into the package that may have been unnecessary. They also took a lot of time.
+
 
 ```{r}
 sessionInfo()

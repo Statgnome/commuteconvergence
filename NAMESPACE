@@ -1,2 +1,5 @@
 exportPattern("^[[:alpha:]]+")
 importFrom(dplyr,"%>%")
+importFrom("graphics", "plot")
+importFrom("stats", "TukeyHSD", "anova", "aov", "fligner.test",
+             "kmeans", "ks.test", "lm", "sd")

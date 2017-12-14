@@ -14,22 +14,18 @@ read_sheet(url,sheetname)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{url}{A Google Sheets sharing url the user must supply as a character string with 
+  \item{url}{A Google Sheets sharing url the user must supply as a character string with
   quotation marks.}
   \item{sheetname}{A character name defaults to "Sheet1", but the user may specify a
   specific sheet name of their own if their sheet is named in Google Sheets.}
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+
 \value{
 A data frame of the requested Google Sheet.
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+
 \author{
-David Burton
+David Burton, URMC Dept. of Biostatistics
 }
 \note{
 Wubba lubba dub dub
@@ -37,20 +33,8 @@ Wubba lubba dub dub
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function (x) 
-{
-  }
-}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ commute }% use one of  RShowDoc("KEYWORDS")
+\keyword{ sheets }% __ONLY ONE__ keyword per line

@@ -1,25 +1,16 @@
 Package: commuteconvergence
 Type: Package
 Title: Compare Commute Times using Google Sheets
-<<<<<<< HEAD
-Version: 0.0.0.9001
-=======
-Version: 0.0.0.9000
->>>>>>> af6319c6bd08380aa62468ff2644a03011ae0b58
+Version: 0.0.0.9002
 Author: David Burton
 Maintainer: David Burton <david_burton@urmc.rochester.edu>
-Description: This package takes formatted time records, and performs
-    some basic analysis on them. It specifically allows people to make
-    observations about their commute time from home to the parking lot
-    to the office, or place of final arrival. It plots, performs ANOVA
-    if different days have been recorded, and displays results in a
-    nice to read format with a recommendation for what time to head
-    out each day. 
+Description: This package takes formatted time records, and performs some basic analysis on them. It specifically allows people to make observations about their commute time from home to the parking lot to the office, or place of final arrival. It plots, performs ANOVA if different days have been recorded, and displays results in a nice to read format with a recommendation for what time to head out each day. 
 Depends: R(>= 3.4.1)
 Imports:
     ggplot2(>= 2.2.1),
     googlesheets(>= 0.2.2),
-    tidyverse(>= 1.1.1) 
+    dplyr(>= 0.7.4),
+    tibble(>= 1.3.4)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
